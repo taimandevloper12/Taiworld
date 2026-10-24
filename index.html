@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TAIMAN WORLD</title>
+<style>
+:root{--bg:#070b16;--card:#0f1730;--line:#1f2d55;--tx:#e6f0ff;--mut:#7f93bf;--c1:#00f0ff;--c2:#ff2bd6;--ok:#38ff9c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#070b16}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(900px 500px at 80% -10%,#2a0f4a55,transparent),radial-gradient(700px 500px at -10% 110%,#00f0ff22,transparent),var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+h1,h2{margin:0}
+.logo{font-weight:900;letter-spacing:.18em;background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 24px #00f0ff55}
+#login{margin:auto;width:min(92%,380px);background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 22px;text-align:center;box-shadow:0 0 40px #00f0ff22}
+#login .logo{font-size:30px}
+#login p{color:var(--mut);font-size:14px;line-height:1.5}
+input{width:100%;background:#0a1128;border:1px solid var(--line);color:var(--tx);border-radius:12px;padding:13px 14px;font-size:16px;outline:none}
+input:focus{border-color:var(--c1);box-shadow:0 0 0 3px #00f0ff22}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:12px 16px;font-weight:700;color:#04101c;background:linear-gradient(90deg,var(--c1),#7a7bff)}
+button:disabled{opacity:.4}
+button.ghost{background:#16224a;color:var(--tx);border:1px solid var(--line)}
+#err{color:#ff6b8b;font-size:13px;min-height:18px;margin:8px 0}
+#app{display:none;flex:1;min-height:0;flex-direction:column}
+header{padding:10px 14px;border-bottom:1px solid var(--line);background:#0a1128cc}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.top .logo{font-size:15px}
+.me{font-size:13px;text-align:right}
+.bar{height:7px;background:#16224a;border-radius:9px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c1),var(--c2));transition:width .5s}
+.sub{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-top:4px}
+nav{display:flex;gap:6px;padding:8px 10px}
+nav button{flex:1;background:#101a3a;color:var(--mut);border:1px solid var(--line);padding:9px 4px;font-size:13px}
+nav button.on{color:#04101c;background:linear-gradient(90deg,var(--c1),#7a7bff);border-color:transparent}
+.pane{display:none;flex:1;min-height:0;flex-direction:column}
+.pane.on{display:flex}
+#msgs{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:7px}
+.m{max-width:86%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:7px 11px;font-size:15px;word-break:break-word;overflow-wrap:anywhere}
+.m.me{align-self:flex-end;background:#12285a;border-color:#2b4d9a}
+.m b{font-size:12px;display:block;margin-bottom:2px}
+.m small{color:var(--mut);font-size:10px;margin-left:6px}
+.sys{align-self:center;color:var(--mut);font-size:12px}
+.send{display:flex;gap:8px;padding:8px 10px;border-top:1px solid var(--line);background:#0a1128cc}
+.send input{flex:1}
+#emo{display:none;flex-wrap:wrap;gap:6px;padding:6px 10px;border-top:1px solid var(--line)}
+#emo span{font-size:22px;cursor:pointer}
+.list{flex:1;overflow-y:auto;padding:4px 12px 12px}
+.row{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-top:7px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.row .n{flex:1;min-width:0}
+.row .n b{display:block;overflow:hidden;text-overflow:ellipsis}
+.row .n small{color:var(--mut)}
+.dot{width:9px;height:9px;border-radius:50%;background:#33406a}
+.dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.rk{width:26px;text-align:center;font-weight:800;color:var(--mut)}
+.lock{opacity:.45}
+.bonus{margin:10px 12px 0}
+.note{margin:8px 12px;color:var(--mut);font-size:12px}
+#wbox{position:relative;flex:1;min-height:0;overflow:hidden}
+#wbox canvas{display:block;width:100%;height:100%;touch-action:none}
+#wcount,#whint{position:absolute;left:10px;font-size:12px;padding:5px 10px;border-radius:20px;background:#070b16cc;border:1px solid var(--line);pointer-events:none}
+#wcount{top:10px}#whint{bottom:10px;color:var(--mut)}
+#kmod{display:none;position:fixed;inset:0;background:#000a;align-items:center;justify-content:center;z-index:50}
+.kbox{width:min(90%,340px);background:var(--card);border:1px solid var(--c1);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px}
+#kmsg{font-size:13px;min-height:18px}
+.dock{height:42%;min-height:0;display:flex;flex-direction:column;border-top:1px solid var(--c1);background:#070b16f2}
+</style>
+</head>
+<body>
+
+<section id="login">
+  <h1 class="logo">TAIMAN WORLD</h1>
+  <p>Cyber olamga xush kelibsiz! Nik nom tanlang, boshqa foydalanuvchilar bilan suhbatlashing, ball toʻplang va darajangizni oshiring.</p>
+  <input id="nick" maxlength="16" placeholder="Nik nom (3–16 belgi)" autocomplete="off" autocapitalize="off">
+  <div id="err"></div>
+  <button id="go" style="width:100%">Olamga kirish</button>
+  <button id="fgo" class="ghost" style="width:100%;margin-top:8px">👑 Asoschi kirishi (parol)</button>
+  <p style="font-size:12px">Faqat lotin harflari, raqam va _ ishlatiladi.</p>
+</section>
+
+<section id="app">
+  <header>
+    <div class="top">
+      <h2 class="logo">TAIMAN WORLD</h2>
+      <div class="me"><b id="mNick"></b> · <span id="mLv"></span> <button id="keyBtn" class="ghost" style="padding:3px 8px;margin-left:4px">🔑</button></div>
+    </div>
+    <div class="bar"><i id="pb"></i></div>
+    <div class="sub"><span id="pts">0 ball</span><span id="nxt"></span></div>
+  </header>
+  <nav>
+    <button data-t="world" class="on">🌍 Olam + Chat</button>
+    <button data-t="top">🏆 Reyting</button>
+    <button data-t="quiz">🧠 Savol</button>
+    <button data-t="perk">🎁 Imkoniyat</button>
+  </nav>
+
+  <div class="pane on" id="p-world"><div id="wbox"><div id="wcount">👥 1 olamda</div><div id="whint">Yerga bosing — odamcha yuradi (kompyuterda: WASD)</div></div>
+
+  <div class="dock" id="p-chat">
+    <div id="msgs"></div>
+    <div id="emo"></div>
+    <div class="send">
+      <button class="ghost" id="chBtn" style="padding:10px 8px;font-size:12px">🌐 Umumiy</button>
+      <button class="ghost" id="emoBtn" title="Emoji">😎</button>
+      <input id="txt" maxlength="200" placeholder="Xabar yozing..." autocomplete="off">
+      <button id="sendBtn">➤</button>
+    </div>
+  </div>
+  </div>
+
+  <div class="pane" id="p-top">
+    <button class="bonus" id="bonus">🎯 Kunlik bonus: +50 ball</button>
+    <div class="note">Onlayn boʻlgan sari har 30 soniyada +3 ball, har xabarga +2 ball.</div>
+    <div class="list" id="board"></div>
+  </div>
+
+  <div class="pane" id="p-quiz"><div class="list" id="qbox"></div></div>
+
+  <div class="pane" id="p-perk">
+    <div class="list" id="perks"></div>
+  </div>
+</section>
+
+<div id="kmod"><div class="kbox"><h2 id="ktitle" class="logo" style="font-size:18px"></h2><input id="kpw" type="password" placeholder="Parol" autocomplete="off"><div id="kmsg"></div><button id="kok">Tasdiqlash</button><button id="kout" class="ghost">Asoschi rejimidan chiqish</button><button id="kx" class="ghost">Yopish</button></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const LEVELS=[
+ {n:"Yangi kelgan",min:0,c:"#9fb3d9",perk:"Chatda yozish va ball toʻplash"},
+ {n:"Izlovchi",min:50,c:"#38ff9c",perk:"Nik nomingiz yashil rangda"},
+ {n:"Jangchi",min:150,c:"#00f0ff",perk:"Emoji paneli ochiladi 😎"},
+ {n:"Ustoz",min:400,c:"#ffd23a",perk:"Nik yonida ⭐ belgisi"},
+ {n:"Afsonaviy",min:1000,c:"#ff2bd6",perk:"Nik yonida 🔥 belgisi"},
+ {n:"Cyber Taiman",min:2500,c:"#ff6a3d",perk:"Nik yonida 💠 belgisi"},
+ {n:"TAIMAN",min:1e9,c:"#ffd700",perk:"Faqat asoschi: 👑 belgi, oltin ism"}
+];
+const EMOJI=["😀","😂","😍","🤩","😎","🥳","🤖","👾","🚀","🔥","💎","⚡","🎮","👑","❤️","👍"];
+const BADGE=["","","","⭐","🔥","💠","👑"];
+const $=id=>document.getElementById(id);
+const lvOf=p=>{let i=0;LEVELS.forEach((l,k)=>{if(p>=l.min)i=k});return i};
+const eff=(n,p)=>(founder&&n&&String(n).toLowerCase()===founder)?1e9:p;
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+let entered=false,founder="",U=null,room=null,db=null,uid=null,nick="",key="",points=0,lastBonus=0,lastSend=0,local=[];
+let playersCache=[];
+
+function say(t){$("err").textContent=t}
+
+async function init(){
+  try{
+    if(window.claude&&claude.use){
+      db=await claude.use("db");
+      try{room=await claude.use("room")}catch(e){room=null}
+      const u=await claude.use("user");U=u;
+      if(u&&u.id) uid=await u.id();
+    }
+  }catch(e){db=null}
+  if(!uid){uid=ls.get("tw_uid");if(!uid){uid="g"+Math.random().toString(36).slice(2,12);ls.set("tw_uid",uid)}}
+  const saved=ls.get("tw_nick");
+  if(saved){$("nick").value=saved}
+}
+
+$("go").onclick=async()=>{
+  const v=$("nick").value.trim();
+  if(!/^[A-Za-z0-9_]{3,16}$/.test(v)){say("Nik 3–16 belgi: lotin harf, raqam yoki _");return}
+  if(/taiman/i.test(v)){let own=false;try{own=!!(U&&U.isOwner&&U.isOwner())}catch(e){}if(!own){say("Bu nik asoschi uchun band");return}}
+  $("go").disabled=true;say("");
+  key=v.toLowerCase();nick=v;
+  try{
+    if(db){
+      const ref=db.doc("players/"+key);
+      const s=await ref.get();
+      if(s.exists){
+        const d=s.data();
+        if(d.uid!==uid){say("Bu nik band, boshqasini tanlang");$("go").disabled=false;return}
+        points=d.points||0;lastBonus=d.bonusAt||0;qdone=d.qdone||[];qd=d.qd||"";qn=d.qn||0;
+      }else{
+        await ref.set({nick,uid,points:0,seen:Date.now(),bonusAt:0});
+      }
+    }
+  }catch(e){db=null;say("Server bilan aloqa yoʻq — oflayn rejim")}
+  ls.set("tw_nick",nick);
+  enter();
+};
+$("nick").addEventListener("keydown",e=>{if(e.key==="Enter")$("go").click()});
+
+function enter(){
+  entered=true;$("login").style.display="none";$("app").style.display="flex";
+  buildPerks();buildEmoji();renderMe();
+  try{initWorld()}catch(e){$("wcount").textContent="3D olam ishga tushmadi: "+(e&&e.message||e)}
+  if(db){
+    db.doc("founder/now").onSnapshot(s=>{founder=(s.exists&&s.data().nick)?String(s.data().nick).toLowerCase():"";renderMe();renderBoard()},()=>{});
+    db.collection("msgs").orderBy("t","desc").limit(60).onSnapshot(s=>renderMsgs(s.docs.map(d=>d.data()).reverse()),()=>{});
+    db.collection("players").orderBy("points","desc").limit(30).onSnapshot(s=>{playersCache=s.docs.map(d=>d.data());renderBoard()},()=>{});
+  }else{
+    renderMsgs([{sys:1,text:"Oflayn rejim: xabarlar faqat sizda koʻrinadi. Boshqalar bilan suhbat uchun sahifa ulashilgan boʻlishi kerak."}]);
+    playersCache=[{nick,points,seen:Date.now()}];renderBoard();
+  }
+  setInterval(tick,30000);
+}
+
+let saving=Promise.resolve();
+function save(extra){
+  if(!db)return;
+  saving=saving.then(()=>db.doc("players/"+key).update(Object.assign({points,seen:Date.now()},extra||{}))).catch(()=>{});
+}
+function addPts(n,extra){points+=n;renderMe();save(extra)}
+function tick(){if(!document.hidden)addPts(3);else save()}
+
+function renderMe(){
+  const i=lvOf(eff(nick,points)),L=LEVELS[i],N=LEVELS[i+1];
+  $("mNick").textContent=nick;$("mNick").style.color=L.c;
+  $("mLv").textContent="Lv."+(i+1)+" "+L.n;
+  $("pts").textContent=points+" ball";
+  if(N&&N.min<1e9){$("pb").style.width=((points-L.min)/(N.min-L.min)*100)+"%";$("nxt").textContent="Keyingisi: "+N.min}
+  else{$("pb").style.width="100%";$("nxt").textContent="Maksimal daraja!"}
+  $("emoBtn").style.opacity=i>=2?1:.35;
+  if(window.wRefresh)wRefresh();
+  const ok=Date.now()-lastBonus>864e5;
+  $("bonus").disabled=!ok;
+  $("bonus").textContent=ok?"🎯 Kunlik bonus: +50 ball":"✅ Bonus olingan, ertaga qaytib keling";
+  buildPerks();
+}
+
+function nameEl(n,p){
+  const i=lvOf(p||0);const b=document.createElement("b");
+  b.textContent=(n||"?")+(BADGE[i]?" "+BADGE[i]:"");b.style.color=LEVELS[i].c;return b;
+}
+
+function renderMsgs(list){
+  lastMsgs=list;
+  if(chan==="near"){const q=pos();list=list.filter(m=>m.sys||m.x===undefined||Math.hypot(m.x-q.x,m.z-q.z)<=12)}
+  const box=$("msgs");const stick=box.scrollTop+box.clientHeight>=box.scrollHeight-80;
+  box.textContent="";
+  if(!list.length){const d=document.createElement("div");d.className="sys";d.textContent="Hali xabar yoʻq. Birinchi boʻlib salom bering! 👋";box.appendChild(d)}
+  list.forEach(m=>{
+    const d=document.createElement("div");
+    if(m.sys){d.className="sys";d.textContent=m.text;box.appendChild(d);return}
+    d.className="m"+(m.nick===nick?" me":"");
+    const h=nameEl(m.nick,eff(m.nick,m.p));
+    const tm=document.createElement("small");tm.textContent=new Date(m.t).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    h.appendChild(tm);
+    const s=document.createElement("span");s.textContent=m.text;
+    d.append(h,s);box.appendChild(d);
+  });
+  if(stick)box.scrollTop=box.scrollHeight;
+}
+
+async function send(){
+  const t=$("txt").value.trim();if(!t)return;
+  $("txt").value="";
+  const q=pos();const m={nick,text:t,t:Date.now(),p:points,x:+q.x.toFixed(1),z:+q.z.toFixed(1)};
+  if(db){
+    try{await db.doc("msgs/"+m.t+"_"+Math.random().toString(36).slice(2,6)).set(m)}catch(e){return}
+  }else{local.push(m);renderMsgs(local);$("msgs").scrollTop=1e9}
+  if(room){try{room.presence({s:t.slice(0,60),st:Date.now()}).catch(()=>{})}catch(e){}}
+  if(Date.now()-lastSend>5000){lastSend=Date.now();addPts(2)}
+}
+$("sendBtn").onclick=send;
+$("txt").addEventListener("keydown",e=>{if(e.key==="Enter")send()});
+
+function buildEmoji(){
+  const e=$("emo");e.textContent="";
+  EMOJI.forEach(x=>{const s=document.createElement("span");s.textContent=x;s.onclick=()=>{$("txt").value+=x;$("txt").focus()};e.appendChild(s)});
+}
+$("emoBtn").onclick=()=>{
+  if(lvOf(points)<2){const e=$("err");alert("Emoji paneli 3-darajada (Jangchi, 150 ball) ochiladi.");return}
+  const e=$("emo");e.style.display=e.style.display==="flex"?"none":"flex";
+};
+
+function renderBoard(){
+  const b=$("board");b.textContent="";
+  playersCache.forEach((p,i)=>{
+    const r=document.createElement("div");r.className="row";
+    const rk=document.createElement("div");rk.className="rk";rk.textContent=i<3?["🥇","🥈","🥉"][i]:i+1;
+    const dot=document.createElement("div");dot.className="dot"+(Date.now()-(p.seen||0)<75000||p.nick===nick?" on":"");
+    const n=document.createElement("div");n.className="n";
+    const pp=eff(p.nick,p.points||0),nm=nameEl(p.nick,pp);
+    const sm=document.createElement("small");sm.textContent="Lv."+(lvOf(pp)+1)+" "+LEVELS[lvOf(pp)].n+" · "+(p.points||0)+" ball";
+    n.append(nm,sm);r.append(rk,dot,n);b.appendChild(r);
+  });
+}
+setInterval(()=>{if($("p-top").classList.contains("on"))renderBoard()},15000);
+
+function buildPerks(){
+  const p=$("perks");if(!p)return;p.textContent="";
+  const cur=lvOf(eff(nick,points));
+  LEVELS.forEach((L,i)=>{
+    const r=document.createElement("div");r.className="row"+(i>cur?" lock":"");
+    const ic=document.createElement("div");ic.className="rk";ic.textContent=i>cur?"🔒":"✅";
+    const n=document.createElement("div");n.className="n";
+    const b=document.createElement("b");b.textContent="Lv."+(i+1)+" "+L.n;b.style.color=L.c;
+    const s=document.createElement("small");s.textContent=(L.min>=1e9?"Asoschi":L.min+" ball")+" · "+L.perk;
+    n.append(b,s);r.append(ic,n);p.appendChild(r);
+  });
+}
+
+$("bonus").onclick=()=>{
+  if(Date.now()-lastBonus<=864e5)return;
+  lastBonus=Date.now();addPts(50,{bonusAt:lastBonus});
+};
+
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+  document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("on",p.id==="p-"+b.dataset.t));
+  if(b.dataset.t==="top")renderBoard();
+  if(b.dataset.t==="quiz")qRender();
+  if(b.dataset.t==="world"&&window.wResize)setTimeout(wResize,30);
+});
+
+/* ===== TAIMAN PAROLI ===== */
+async function kdf(pw,salt){const k=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);
+ const b=await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt:Uint8Array.from(atob(salt),c=>c.charCodeAt(0)),iterations:200000},k,256);
+ return btoa(String.fromCharCode(...new Uint8Array(b)))}
+const FOUNDER_KEY={salt:"AUhy8apSMtV/CQh7C8lPRA==",hash:"bl2upF5aou9mo93xo8qzjJzOOBpXXf64DWAjs5RxpSc="};
+let kTries=0,kLock=0,kCfg=null;
+function kmsg(t,ok){const m=$("kmsg");m.textContent=t;m.style.color=ok?"#38ff9c":"#ff6b8b"}
+async function openKey(){
+ $("kmod").style.display="flex";kmsg("");$("kpw").value="";
+ if(!db){kmsg("Server yoʻq — bu funksiya ishlamaydi");return}
+ const isO=!!(U&&U.isOwner&&U.isOwner());kCfg=null;
+ kCfg=FOUNDER_KEY;
+ const can=!!kCfg||isO;
+ $("ktitle").textContent=kCfg?"Asoschi paroli":(isO?"Taiman parolini oʻrnating":"Parol oʻrnatilmagan");
+ $("kpw").style.display=$("kok").style.display=can?"block":"none";
+ $("kout").style.display=(founder&&founder===key)?"block":"none";
+ if(!can)kmsg("TAIMAN darajasi hozircha yopiq.");
+ else if(!kCfg)kmsg("Kamida 8 belgi. Parolni hech kimga bermang.",1)}
+$("keyBtn").onclick=openKey;
+$("kx").onclick=()=>{$("kmod").style.display="none"};
+$("kout").onclick=async()=>{try{await db.doc("founder/now").delete();kmsg("Chiqdingiz",1)}catch(e){kmsg("Bajarilmadi")}};
+$("kok").onclick=async()=>{
+ const pw=$("kpw").value;
+ if(Date.now()<kLock){kmsg("Juda koʻp urinish. 1 daqiqa kuting.");return}
+ try{
+  if(!kCfg){
+   if(pw.length<8){kmsg("Parol juda qisqa");return}
+   const salt=btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))));
+   const hash=await kdf(pw,salt);
+   await db.doc("config/founder").set({salt,hash});
+   kCfg={salt,hash};$("kpw").value="";$("ktitle").textContent="Asoschi paroli";kmsg("Parol oʻrnatildi. Endi uni kiriting.",1);return}
+  if(await kdf(pw,kCfg.salt)!==kCfg.hash){kTries++;if(kTries>=5){kLock=Date.now()+60000;kTries=0}kmsg("Notoʻgʻri parol");return}
+  kTries=0;
+  if(!entered){nick="TAIMAN";key="taiman";const pr=db.doc("players/taiman");const s=await pr.get();
+   if(s.exists){const d=s.data();points=d.points||0;lastBonus=d.bonusAt||0;qdone=d.qdone||[];qd=d.qd||"";qn=d.qn||0;if(d.uid!==uid)await pr.update({uid})}
+   else await pr.set({nick,uid,points:0,seen:Date.now(),bonusAt:0});
+   ls.set("tw_nick",nick)}
+  await db.doc("founder/now").set({nick,uid,at:Date.now()});
+  kmsg("Xush kelibsiz, TAIMAN! 👑",1);setTimeout(()=>{$("kmod").style.display="none";if(!entered)enter()},900)
+ }catch(e){kmsg("Bajarilmadi. Asoschi huquqi faqat sahifa egasida boʻladi.")}
+};
+
+/* ===== SAVOLLAR ===== */
+const QS=[
+["Quyoshga eng yaqin sayyora qaysi?",["Venera","Merkuriy","Mars","Yer"],1],
+["Eng katta sayyora qaysi?",["Saturn","Neptun","Yupiter","Uran"],2],
+["“Qizil sayyora” deb qaysi sayyoraga aytiladi?",["Mars","Venera","Yupiter","Merkuriy"],0],
+["Yerning tabiiy yoʻldoshi nima?",["Fobos","Oy","Titan","Yevropa"],1],
+["Quyosh tizimida nechta sayyora bor?",["7","8","9","10"],1],
+["Halqalari bilan mashhur sayyora qaysi?",["Saturn","Mars","Yer","Venera"],0],
+["HTML nimaning qisqartmasi?",["HyperText Markup Language","High Tech Modern Link","Home Tool Markup Level","Hyper Transfer Mode"],0],
+["Veb-sahifalarni bezash uchun qaysi til ishlatiladi?",["CSS","SQL","C++","Python"],0],
+["3D grafika uchun mashhur JavaScript kutubxonasi?",["jQuery","Three.js","Lodash","Express"],1],
+["Eng koʻp suv bilan qoplangan sayyora qaysi?",["Mars","Yer","Oy","Merkuriy"],1],
+["Yorugʻlik tezligi taxminan qancha?",["300 ming km/s","3 ming km/s","30 ming km/s","3 million km/s"],0],
+["Oʻzbekiston poytaxti qaysi shahar?",["Samarqand","Buxoro","Toshkent","Namangan"],2],
+["Amir Temur qaysi shaharda dafn etilgan?",["Samarqand","Xiva","Qarshi","Termiz"],0],
+["Algebra fanining asoschisi kim?",["Ibn Sino","Al-Xorazmiy","Beruniy","Ulugʻbek"],1],
+["Mirzo Ulugʻbek nima bilan shugʻullangan?",["Astronomiya","Tibbiyot","Dengizchilik","Rassomlik"],0],
+["Binar (ikkilik) sanoq tizimida qaysi raqamlar bor?",["0 va 1","1 va 2","0 dan 9 gacha","A dan F gacha"],0],
+["Galaktikamiz qanday nomlanadi?",["Andromeda","Somon yoʻli","Uchburchak","Magellan"],1],
+["Suvning kimyoviy formulasi qaysi?",["CO2","H2O","O2","NaCl"],1],
+["Inson tanasida nechta asosiy sezgi organi bor deb hisoblanadi?",["3","5","7","9"],1],
+["Eng tez quruqlik hayvoni qaysi?",["Sher","Gepard","Ot","Yoʻlbars"],1],
+["Kompyuterning “miyasi” deb nimaga aytiladi?",["Monitor","Protsessor","Sichqoncha","Klaviatura"],1],
+["Oy Yer atrofini taxminan necha kunda aylanadi?",["7","27","90","365"],1],
+["Qaysi gaz biz nafas olishimiz uchun zarur?",["Kislorod","Azot","Geliy","Vodorod"],0],
+["Internetda sahifa manzili qanday ataladi?",["URL","RAM","USB","GPU"],0]
+];
+let qdone=[],qd="",qn=0,qcur=-1;
+function qRender(msg){
+ const b=$("qbox");b.textContent="";
+ const today=new Date().toISOString().slice(0,10);
+ if(qd!==today){qd=today;qn=0}
+ const add=(t,cls)=>{const d=document.createElement("div");d.className=cls||"note";d.textContent=t;b.appendChild(d);return d};
+ add("Bugun: "+qn+"/10 savol · Toʻgʻri javob +10 ball");
+ if(msg)add(msg,"row");
+ if(qn>=10){add("Bugungi limit tugadi. Ertaga yangi savollar bilan qaytib keling! 🌙");return}
+ let left=QS.map((_,i)=>i).filter(i=>!qdone.includes(i));
+ if(!left.length){qdone=[];left=QS.map((_,i)=>i)}
+ qcur=left[Math.floor(Math.random()*left.length)];
+ const q=QS[qcur];
+ add(q[0],"row").style.fontWeight="700";
+ q[1].forEach((o,i)=>{const bt=document.createElement("button");bt.className="ghost";bt.style.cssText="width:100%;margin-top:7px;text-align:left";bt.textContent=o;bt.onclick=()=>qAns(i);b.appendChild(bt)});
+}
+function qAns(i){
+ const q=QS[qcur];if(!q)return;const ok=i===q[2];
+ qdone.push(qcur);qn++;qcur=-1;
+ if(ok)addPts(10,{qdone,qd,qn});else save({qdone,qd,qn});
+ qRender(ok?"✅ Toʻgʻri! +10 ball":"❌ Xato. Toʻgʻri javob: "+q[1][q[2]]);
+}
+
+/* ===== CHAT KANALLARI ===== */
+let chan="all",lastMsgs=[];
+function pos(){return window.myPos?window.myPos():{x:0,z:0}}
+$("chBtn").onclick=()=>{chan=chan==="all"?"near":"all";$("chBtn").textContent=chan==="all"?"🌐 Umumiy":"📍 Yaqin";renderMsgs(lastMsgs)};
+$("fgo").onclick=openKey;
+setInterval(()=>{if(chan==="near"&&entered)renderMsgs(lastMsgs)},3000);
+
+/* ===== 3D OLAM ===== */
+function initWorld(){
+ if(!window.THREE){
+  if(window._t3tried){$("wcount").textContent="3D kutubxona yuklanmadi (internet yoki tarmoq cheklovi)";return}
+  window._t3tried=1;$("wcount").textContent="3D yuklanmoqda...";
+  const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js";
+  s.onload=()=>{try{initWorld()}catch(e){$("wcount").textContent="3D olam ishga tushmadi: "+(e&&e.message||e)}};
+  s.onerror=()=>{$("wcount").textContent="3D kutubxona yuklanmadi (internet yoki tarmoq cheklovi)"};
+  document.head.appendChild(s);return}
+ const box=$("wbox"),T=THREE;
+ const R=new T.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));box.appendChild(R.domElement);
+ const S=new T.Scene();S.background=new T.Color(0x070b16);S.fog=new T.Fog(0x070b16,18,50);
+ const cam=new T.PerspectiveCamera(55,1,.1,100);
+ S.add(new T.AmbientLight(0x8899cc,.8));
+ const dl=new T.DirectionalLight(0xffffff,.6);dl.position.set(5,12,6);S.add(dl);
+ const pl=new T.PointLight(0x00f0ff,1.2,40);pl.position.set(0,8,0);S.add(pl);
+ const gr=new T.Mesh(new T.PlaneGeometry(60,60),new T.MeshStandardMaterial({color:0x0a1128,roughness:.9}));gr.rotation.x=-Math.PI/2;S.add(gr);
+ const grid=new T.GridHelper(60,60,0x00f0ff,0x1f2d55);grid.position.y=.02;S.add(grid);
+ const pil=[];
+ for(let i=0;i<16;i++){const a=i/16*Math.PI*2,rad=19+(i%3)*2,h=3+(i*7%5);
+  const c=[0x00f0ff,0xff2bd6,0x7a7bff,0x38ff9c][i%4];
+  const m=new T.Mesh(new T.BoxGeometry(1.4,h,1.4),new T.MeshStandardMaterial({color:0x111a3a,emissive:c,emissiveIntensity:.6}));
+  m.position.set(Math.cos(a)*rad,h/2,Math.sin(a)*rad);S.add(m);pil.push(m)}
+ const core=new T.Mesh(new T.TorusKnotGeometry(1.2,.35,80,12),new T.MeshStandardMaterial({color:0x111a3a,emissive:0xff2bd6,emissiveIntensity:.8}));core.position.set(0,2.5,-6);S.add(core);
+ const sp=new Float32Array(900);for(let i=0;i<900;i++)sp[i]=(Math.random()-.5)*90+(i%3===1?45:0);
+ const sg=new T.BufferGeometry();sg.setAttribute("position",new T.BufferAttribute(sp,3));S.add(new T.Points(sg,new T.PointsMaterial({color:0xaaccff,size:.18})));
+
+ function sprite(w,h){const c=document.createElement("canvas");c.width=w;c.height=h;const t=new T.CanvasTexture(c);const s=new T.Sprite(new T.SpriteMaterial({map:t,transparent:true,depthTest:false}));return{c,t,s}}
+ function drawTag(a){const i=lvOf(a.p),L=LEVELS[i],g=a.tag.c.getContext("2d");g.clearRect(0,0,256,96);
+  g.fillStyle="rgba(7,11,22,.8)";g.fillRect(6,6,244,84);g.strokeStyle=L.c;g.lineWidth=4;g.strokeRect(6,6,244,84);
+  g.textAlign="center";g.fillStyle=L.c;g.font="bold 34px sans-serif";g.fillText((a.n+(BADGE[i]?" "+BADGE[i]:"")).slice(0,14),128,46);
+  g.fillStyle="#e6f0ff";g.font="22px sans-serif";g.fillText("Lv."+(i+1)+" "+L.n,128,76);a.tag.t.needsUpdate=true}
+ function drawBub(a,txt){const g=a.bub.c.getContext("2d");g.clearRect(0,0,320,72);g.fillStyle="#fff";g.fillRect(4,4,312,56);g.fillStyle="#07101c";g.font="bold 26px sans-serif";g.textAlign="center";g.fillText(txt.slice(0,24),160,42);a.bub.t.needsUpdate=true}
+ function restyle(a){const i=lvOf(a.p),col=new T.Color(LEVELS[i].c);
+  a.cloth.emissive.copy(col).multiplyScalar(.3);a.glow.emissive.copy(col);a.ring.material.color.copy(col);
+  a.g.scale.setScalar(1+i*.05);drawTag(a)}
+ function mk(n,p){
+  const M=(c)=>new T.MeshStandardMaterial({color:c,roughness:.5});
+  const skin=M(0xffd3b0),cloth=M(0x1b2a55),glow=M(0x111111);
+  const g=new T.Group(),body=new T.Mesh(new T.BoxGeometry(.7,.9,.4),cloth);body.position.y=1.35;
+  const head=new T.Mesh(new T.SphereGeometry(.28,16,12),skin);head.position.y=2.1;
+  const vis=new T.Mesh(new T.BoxGeometry(.4,.1,.1),glow);vis.position.set(0,2.12,.22);
+  const limb=(w,h,x,y,m)=>{const pv=new T.Group();pv.position.set(x,y,0);const l=new T.Mesh(new T.BoxGeometry(w,h,w),m);l.position.y=-h/2;pv.add(l);return pv};
+  const aL=limb(.2,.8,-.46,1.75,skin),aR=limb(.2,.8,.46,1.75,skin),lL=limb(.28,.9,-.17,.9,cloth),lR=limb(.28,.9,.17,.9,cloth);
+  const ring=new T.Mesh(new T.RingGeometry(.7,.88,32),new T.MeshBasicMaterial({color:0x00f0ff,side:T.DoubleSide,transparent:true,opacity:.85}));ring.rotation.x=-Math.PI/2;ring.position.y=.04;
+  const tag=sprite(256,96);tag.s.scale.set(2.6,.98,1);tag.s.position.y=3.0;
+  const bub=sprite(320,72);bub.s.scale.set(2.6,.58,1);bub.s.position.y=3.7;bub.s.visible=false;
+  const body2=new T.Group();body2.add(body,head,vis,aL,aR,lL,lR);
+  g.add(body2,ring,tag.s,bub.s);
+  const a={g,body2,aL,aR,lL,lR,ring,cloth,glow,tag,bub,n,p:p||0,raw:p||0,x:0,z:0,tx:0,tz:0,st:0,ph:Math.random()*6};
+  restyle(a);S.add(g);return a}
+ const cl=v=>Math.max(-24,Math.min(24,+v||0));
+ const me=mk(nick,points);me.x=me.tx=(Math.random()-.5)*8;me.z=me.tz=(Math.random()-.5)*6+4;
+ const others={};let lastPres=0;window.myPos=()=>({x:me.x,z:me.z});
+ function pres(force){const now=performance.now();if(!room||(!force&&now-lastPres<150))return;lastPres=now;
+  try{room.presence({n:nick,p:points,x:+me.x.toFixed(2),z:+me.z.toFixed(2),tx:+me.tx.toFixed(2),tz:+me.tz.toFixed(2)}).catch(()=>{})}catch(e){}}
+ function onPeers(ch){
+  const keep={};
+  ch.peers.forEach(pr=>{if(pr.isMe)return;const d=pr.presence;if(!d||typeof d.n!=="string")return;keep[pr.peer]=1;
+   let a=others[pr.peer];
+   if(!a){a=others[pr.peer]=mk(d.n.slice(0,16),+d.p||0);a.x=cl(d.x);a.z=cl(d.z)}
+   a.tx=cl(d.tx);a.tz=cl(d.tz);
+   if(Math.hypot(a.x-cl(d.x),a.z-cl(d.z))>4){a.x=cl(d.x);a.z=cl(d.z)}
+   a.raw=+d.p||0;
+   if(typeof d.s==="string"&&+d.st>a.st){a.st=+d.st;drawBub(a,d.s)}});
+  Object.keys(others).forEach(k=>{if(!keep[k]){S.remove(others[k].g);delete others[k]}});
+  $("wcount").textContent="👥 "+(Object.keys(others).length+1)+" olamda"}
+ if(room){try{onPeers({peers:room.peers()});room.onPeers(onPeers,()=>{})}catch(e){}}
+ pres(true);setInterval(()=>pres(true),2500);
+
+ const rc=new T.Raycaster(),pn=new T.Plane(new T.Vector3(0,1,0),0),hit=new T.Vector3(),ndc=new T.Vector2();
+ R.domElement.addEventListener("pointerdown",e=>{
+  const b=R.domElement.getBoundingClientRect();ndc.set((e.clientX-b.left)/b.width*2-1,-((e.clientY-b.top)/b.height)*2+1);
+  rc.setFromCamera(ndc,cam);if(rc.ray.intersectPlane(pn,hit)){me.tx=cl(hit.x);me.tz=cl(hit.z);pres(true)}});
+ const keys={};
+ addEventListener("keydown",e=>{if(document.activeElement&&document.activeElement.tagName==="INPUT")return;keys[e.key.toLowerCase()]=1});
+ addEventListener("keyup",e=>{keys[e.key.toLowerCase()]=0});
+
+ function step(a,dt,t,isMe){
+  const ep=eff(a.n,a.raw);if(ep!==a.p){const c=lvOf(ep)!==lvOf(a.p);a.p=ep;if(c)restyle(a)}
+  const dx=a.tx-a.x,dz=a.tz-a.z,d=Math.hypot(dx,dz),mv=d>.08;
+  if(mv){const s=Math.min(d,4*dt);a.x+=dx/d*s;a.z+=dz/d*s;
+   let ry=Math.atan2(dx,dz),df=ry-a.g.rotation.y;df=Math.atan2(Math.sin(df),Math.cos(df));a.g.rotation.y+=df*Math.min(1,dt*10)}
+  a.g.position.set(a.x,0,a.z);
+  const sw=mv?Math.sin(t*9+a.ph)*.8:0;
+  a.lL.rotation.x=sw;a.lR.rotation.x=-sw;a.aL.rotation.x=-sw;a.aR.rotation.x=sw;
+  a.body2.position.y=mv?Math.abs(Math.sin(t*9+a.ph))*.08:Math.sin(t*2+a.ph)*.03;
+  a.ring.scale.setScalar(1+.1*Math.sin(t*3+a.ph)+lvOf(a.p)*.03);
+  a.bub.s.visible=Date.now()-a.st<6000&&a.st>0}
+ let prev=performance.now();
+ function loop(now){requestAnimationFrame(loop);
+  const dt=Math.min(.05,(now-prev)/1000);prev=now;const t=now/1000;
+  if($("p-world").classList.contains("on")){
+   let kx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),kz=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);
+   if(kx||kz){me.tx=cl(me.x+kx*2);me.tz=cl(me.z+kz*2);pres()}
+   step(me,dt,t,1);Object.values(others).forEach(a=>step(a,dt,t));
+   core.rotation.x=t*.6;core.rotation.y=t*.9;core.position.y=2.5+Math.sin(t*1.5)*.4;
+   pil.forEach((m,i)=>m.material.emissiveIntensity=.5+.3*Math.sin(t*2+i));
+   cam.position.lerp(new T.Vector3(me.x,8,me.z+11),Math.min(1,dt*3));cam.lookAt(me.x,1.5,me.z);
+   R.render(S,cam)}}
+ requestAnimationFrame(loop);
+ window.wResize=()=>{const w=box.clientWidth,h=box.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()};
+ window.wRefresh=()=>{if(me.raw!==points){me.raw=points;pres(true)}};
+ if(window.ResizeObserver)new ResizeObserver(wResize).observe(box);
+ addEventListener("resize",wResize);wResize();
+}
+
+init();
+</script>
+</body>
+</html>
